@@ -33,7 +33,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/FirstChart.js"
+    "app/FirstChart.js",
+    "app/components/FirstChart.js"
   ],
   "exclude": [
     "node_modules"
