@@ -1,73 +1,82 @@
 'use client'
 
 import FirstChart from "./components/FirstChart"
-// import graphOne from "../lib/data-1.json"
-import styles from '../styles/Home.module.css'
 import { Button } from "@radix-ui/themes"
 import Link from "next/link"
+import { useState } from "react"
+import ShowActor from "./ShowActor"
 
 const data =
 {
   nodes:
     [
-      { id: "Chinyelu Éimhín", group: 1 },
-      { id: "Koray Hilarion", group: 1 },
-      { id: "Pijus Livianus", group: 2 },
-      { id: "Cassiopeia Babür", group: 1 },
-      { id: "Veríssimo Ljubo", group: 1 },
-      { id: "Girolamo Gulumbu", group: 1 },
-      { id: "Proteus Roly", group: 2 },
-      { id: "Tacito Ann", group: 1 },
-      { id: "Kanti Sara", group: 1 },
-      { id: "Terri Sultan", group: 1 },
-      { id: "Salud Denny", group: 2 },
-      { id: "Aleksi Puja", group: 1 },
-      { id: "Edvard Régulo", group: 1 },
-      { id: "Janna Vaast", group: 1 },
-      { id: "Clementina Petronela", group: 1 },
-      { id: "Suman Sue", group: 2 },
-      { id: "Jaruška Irina", group: 1 },
-      { id: "Lillemor Noureddine", group: 1 },
-      { id: "Ernst Ladi", group: 1 },
-      { id: "Pål Uršula", group: 2 },
-      { id: "Heli Thulile", group: 1 },
-      { id: "Adelina Ester", group: 1 },
-      { id: "Amadeu Sigurðr", group: 1 },
-      { id: "Trajan Clara", group: 2 },
-      { id: "Emil Thetis", group: 1 },
-      { id: "Dragutin Bhaskara", group: 1 },
-      { id: "Marina Jurek", group: 1 },
-      { id: "Cosima Luther", group: 2 },
-      { id: "Alfonz Belenus", group: 1 },
-      { id: "Guiomar Lyn", group: 1 },
-      { id: "Ianto Ségolène", group: 1 },
-      { id: "Zeruiah Saveliy", group: 2 },
-      { id: "Josif Nadia", group: 1 },
-      { id: "Shakuntala Diarmaid", group: 1 },
-      { id: "Régis Baldewin", group: 1 },
-      { id: "Klaus Ludovicus", group: 1 },
-      { id: "Bláthnaid Shay", group: 2 },
-      { id: "Rosa Fariha", group: 1 },
-      { id: "Mahavira Al", group: 1 },
-      { id: "Avihu Roxana", group: 1 },
-      { id: "Chiemeka Oriol", group: 2 },
-      { id: "Tryphaina Peru", group: 1 },
-      { id: "Gayatri Zygmunt", group: 2 },
-      { id: "Seok-Jin Dalitso", group: 1 },
-      { id: "Rohan Sunny", group: 2 },
-      { id: "Iris Gayathri", group: 1 },
-      { id: "Trace Irena", group: 1 },
+      { name: "Chinyelu Éimhín", group: 1, id: "1" },
+      { name: "Koray Hilarion", group: 1, id: "aaa" },
+      { name: "Pijus Livianus", group: 2, id: "aaa" },
+      { name: "Cassiopeia Babür", group: 1, id: "aaa" },
+      { name: "Veríssimo Ljubo", group: 1, id: "aaa" },
+      { name: "Girolamo Gulumbu", group: 1, id: "aaa" },
+      { name: "Proteus Roly", group: 2, id: "aaa" },
+      { name: "Tacito Ann", group: 1, id: "aaa" },
+      { name: "Kanti Sara", group: 1, id: "aaa" },
+      { name: "Terri Sultan", group: 1, id: "aaa" },
+      { name: "Salud Denny", group: 2, id: "aaa" },
+      { name: "Aleksi Puja", group: 1, id: "aaa" },
+      { name: "Edvard Régulo", group: 1, id: "aaa" },
+      { name: "Janna Vaast", group: 1, id: "aaa" },
+      { name: "Clementina Petronela", group: 1, id: "aaa" },
+      { name: "Suman Sue", group: 2, id: "aaa" },
+      { name: "Jaruška Irina", group: 1, id: "aaa" },
+      { name: "Lillemor Noureddine", group: 1, id: "aaa" },
+      { name: "Ernst Ladi", group: 1, id: "aaa" },
+      { name: "Pål Uršula", group: 2, id: "aaa" },
+      { name: "Heli Thulile", group: 1, id: "aaa" },
+      { name: "Adelina Ester", group: 1, id: "aaa" },
+      { name: "Amadeu Sigurðr", group: 1, id: "aaa" },
+      { name: "Trajan Clara", group: 2, id: "aaa" },
+      { name: "Emil Thetis", group: 1, id: "aaa" },
+      { name: "Dragutin Bhaskara", group: 1, id: "aaa" },
+      { name: "Marina Jurek", group: 1, id: "aaa" },
+      { name: "Cosima Luther", group: 2, id: "aaa" },
+      { name: "Alfonz Belenus", group: 1, id: "aaa" },
+      { name: "Guiomar Lyn", group: 1, id: "aaa" },
+      { name: "Ianto Ségolène", group: 1, id: "aaa" },
+      { name: "Zeruiah Saveliy", group: 2, id: "aaa" },
+      { name: "Josif Nadia", group: 1, id: "aaa" },
+      { name: "Shakuntala Diarmaname", group: 1, id: "aaa" },
+      { name: "Régis Baldewin", group: 1, id: "aaa" },
+      { name: "Klaus Ludovicus", group: 1, id: "aaa" },
+      { name: "Bláthnaname Shay", group: 2, id: "aaa" },
+      { name: "Rosa Fariha", group: 1, id: "aaa" },
+      { name: "Mahavira Al", group: 1, id: "aaa" },
+      { name: "Avihu Roxana", group: 1, id: "aaa" },
+      { name: "Chiemeka Oriol", group: 2, id: "aaa" },
+      { name: "Tryphaina Peru", group: 1, id: "aaa" },
+      { name: "Gayatri Zygmunt", group: 2, id: "aaa" },
+      { name: "Seok-Jin Dalitso", group: 1, id: "aaa" },
+      { name: "Rohan Sunny", group: 2, id: "aaa" },
+      { name: "Iris Gayathri", group: 1, id: "aaa" },
+      { name: "Trace Irena", group: 1, id: "aaa" },
     ],
   links: []
 }
 export default function Home() {
+  const [actorFocus, setActorFocus] = useState("")
+  const desc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque mollis est mollis neque porta tempus vitae fermentum dolor. Vestibulum congue eros laoreet volutpat hendrerit. Nam eget massa placerat, volutpat lorem et, congue odio. Nulla pharetra mollis ipsum, et tincidunt quam facilisis vitae. Duis fermentum bibendum arcu, at efficitur elit tempus eget. Duis ut eros non est porttitor convallis. Quisque cursus mi at diam sodales, at consectetur elit maximus. Pellentesque ac leo a urna luctus dictum et ac augue. Suspendisse potenti. Curabitur vitae eros dolor. Cras sit amet justo quis dui aliquet varius. Praesent ut eros in ante ultricies varius."
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className="p-5" >Metascience Actors Map</h1>
+    <div>
+      <div className="justify-center">
+        <p className="p-5 justify-center" >Metascience Actors Map</p>
         <Button><Link href="/new">Add Yours</Link></Button>
-        <FirstChart data={data} />
-      </main>
+      </div>
+      <div className="flex flex-wrap p-10">
+        <div className="w-full  lg:w-2/3 p-4">
+          <FirstChart data={data} onFocus={(id: string) => { setActorFocus(id) }} />
+        </div>
+        <div className="w-full  lg:w-80">
+          {actorFocus && <ShowActor name={"Obaka maru"} email={"mailto@example.com"} description={desc} />}
+        </div>
+      </div>
     </div>
   )
 }

@@ -67,10 +67,11 @@ export function forceGraph(
     width = 640, // outer width, in pixels
     height = 400, // outer height, in pixels
     invalidation, // when this promise resolves, stop the simulation
+    onFocus
   } = {}
 ) {
   // Compute values.
-  const N = d3.map(nodes, nodeId).map(intern);
+  const N = d3.map(nodes, nodeTitle).map(intern);
   const LS = d3.map(links, linkSource).map(intern);
   const LT = d3.map(links, linkTarget).map(intern);
   if (nodeTitle === undefined) nodeTitle = (_, i) => N[i];
@@ -140,7 +141,6 @@ export function forceGraph(
     .data(nodes)
     .enter()
     .append("g")
-    .on("click", clicked)
     .call(drag(simulation));
 
   const node = container
@@ -149,6 +149,9 @@ export function forceGraph(
     .attr("stroke", nodeStroke)
     .attr("stroke-opacity", nodeStrokeOpacity)
     .attr("stroke-width", nodeStrokeWidth)
+    .on("mouseover", function () { d3.select(this).attr("stroke", "#f00"); })
+    .on("mouseout", function () { d3.select(this).attr("stroke", null); })
+    .on("click", clicked)
     .attr("r", (d) => (nodeRadius)); // / d.group);
 
   const label = container
@@ -161,38 +164,10 @@ export function forceGraph(
     .style("fill", "#555")
     .text((d) => d.id);
 
-  function clicked(event, d) {
-    const [[x0, y0], [x1, y1]] = path.bounds(d);
-    event.stopPropagation();
-    states.transition().style("fill", null);
-    d3.select(this).transition().style("fill", "red");
-    svg.transition().duration(750).call(
-      zoom.transform,
-      d3.zoomIdentity
-        .translate(width / 2, height / 2)
-        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
-        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-      d3.pointer(event, svg.node())
-    );
+  function clicked(_, d) {
+    console.log(d)
+    onFocus(d.id)
   }
-
-  // svg.selectAll("circle")
-  //   .on("mouseover", function () {
-  //     d3.select(this).attr("fill", "red").raise();
-  //     // svg.call(occlusion);
-  //   })
-  //   .on("mouseout", function () {
-  //     d3.select(this).attr("fill", this.color);
-  //     // svg.call(occlusion);
-  //   })
-  //   .on("click", function () {
-  //     const node = d3.select(this);
-  //     // const cur = +node.attr("data-priority");
-  //     node
-  //       // .attr("data-priority", cur ? null : ++priority)
-  //       .style("fill", "steelblue");
-  //     // svg.call(occlusion);
-  //   });
 
   if (W) link.attr("stroke-width", ({ index: i }) => W[i]);
   if (G) node.attr("fill", ({ index: i }) => color(G[i]));
