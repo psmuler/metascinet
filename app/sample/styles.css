@@ -14,3 +14,8 @@
 .PopoverArrow {
     fill: white;
 }
+
+.radix-theme {
+    max-width: none;
+    /* または必要な横幅に変更 */
+}

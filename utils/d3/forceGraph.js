@@ -51,9 +51,9 @@ export function forceGraph(
     nodeTitle, // given d in nodes, a title string
     nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
     nodeStroke = "#fff", // node stroke color
-    nodeStrokeWidth = 1.5, // node stroke width, in pixels
+    nodeStrokeWidth = 0.8, // node stroke width, in pixels
     nodeStrokeOpacity = 1, // node stroke opacity
-    nodeRadius = 20, // node radius, in pixels
+    nodeRadius = 7, // node radius, in pixels
     nodeStrength,
     linkSource = ({ source }) => source, // given d in links, returns a node identifier string
     linkTarget = ({ target }) => target, // given d in links, returns a node identifier string
@@ -94,18 +94,25 @@ export function forceGraph(
   // Construct the forces.
   const forceNode = d3.forceManyBody();
   const forceLink = d3.forceLink(links).id(({ index: i }) => N[i]);
-  const forceCollide = d3.forceCollide((d) => (2.5 * nodeRadius) / d.group);
+  const forceCollide = d3.forceCollide((d) => (1.1 * nodeRadius)); // / d.group);
   if (nodeStrength !== undefined) forceNode.strength(nodeStrength);
   if (linkStrength !== undefined) forceLink.strength(linkStrength);
   forceLink.distance(linkDistance);
 
-  const simulation = d3
-    .forceSimulation(nodes)
-    .force("link", forceLink)
-    .force("charge", forceNode)
-    .force("collide", forceCollide)
-    .force("center", d3.forceCenter())
-    // .on("tick", ticked);
+  const simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id))
+    .force("charge", d3.forceManyBody())
+    .force("x", d3.forceX())
+    .force("y", d3.forceY());
+
+  // const simulation = d3
+  //   .forceSimulation(nodes)
+  //   .force("link", forceLink)
+  //   .force("charge", forceNode)
+  //   .force("x", d3.forceX())
+  //   .force("y", d3.forceY())
+  //   .force("collide", forceCollide)
+  // // .on("tick", ticked);
 
   const svg = d3
     .select(svgEl)
@@ -133,6 +140,7 @@ export function forceGraph(
     .data(nodes)
     .enter()
     .append("g")
+    .on("click", clicked)
     .call(drag(simulation));
 
   const node = container
@@ -141,17 +149,50 @@ export function forceGraph(
     .attr("stroke", nodeStroke)
     .attr("stroke-opacity", nodeStrokeOpacity)
     .attr("stroke-width", nodeStrokeWidth)
-    .attr("r", (d) => (2.5 * nodeRadius) / d.group);
+    .attr("r", (d) => (nodeRadius)); // / d.group);
 
   const label = container
     .append("text")
-    // .attr("font-size", d => (1.3 * nodeRadius) / d.group)
+    .attr("font-size", 6)//d =>  //(0.3 * nodeRadius) / d.group)
     .attr("text-anchor", "middle")
     .attr("cursor", "default")
     .attr("x", 0)
-    .attr("dy", (d) => (2.5 * nodeRadius) / d.group + nodeRadius)
-    .style("fill", "#000")
+    .attr("dy", (d) => (0.8 * nodeRadius) + nodeRadius) //  / d.group + nodeRadius)
+    .style("fill", "#555")
     .text((d) => d.id);
+
+  function clicked(event, d) {
+    const [[x0, y0], [x1, y1]] = path.bounds(d);
+    event.stopPropagation();
+    states.transition().style("fill", null);
+    d3.select(this).transition().style("fill", "red");
+    svg.transition().duration(750).call(
+      zoom.transform,
+      d3.zoomIdentity
+        .translate(width / 2, height / 2)
+        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+      d3.pointer(event, svg.node())
+    );
+  }
+
+  // svg.selectAll("circle")
+  //   .on("mouseover", function () {
+  //     d3.select(this).attr("fill", "red").raise();
+  //     // svg.call(occlusion);
+  //   })
+  //   .on("mouseout", function () {
+  //     d3.select(this).attr("fill", this.color);
+  //     // svg.call(occlusion);
+  //   })
+  //   .on("click", function () {
+  //     const node = d3.select(this);
+  //     // const cur = +node.attr("data-priority");
+  //     node
+  //       // .attr("data-priority", cur ? null : ++priority)
+  //       .style("fill", "steelblue");
+  //     // svg.call(occlusion);
+  //   });
 
   if (W) link.attr("stroke-width", ({ index: i }) => W[i]);
   if (G) node.attr("fill", ({ index: i }) => color(G[i]));
@@ -182,6 +223,7 @@ const mapColors = (depth) => {
   return colors[depth + 1];
 };
 
+
 export function forceDirectedGraph(data, element) {
   const root = d3.hierarchy(data);
   const links = root.links();
@@ -202,12 +244,12 @@ export function forceDirectedGraph(data, element) {
       d3.forceCollide((d) => depthToRadius(d.depth) + 3)
     )
     .force("charge", d3.forceManyBody().strength(-400))
-    .force("center", d3.forceCenter())
+    .force("center", d3.forceCenter(width / 2, height / 2))
     .force("x", d3.forceX())
     .force("y", d3.forceY());
 
-    let width = 400;
-    let height = 400;
+  let width = 400;
+  let height = 400;
 
   const svg = d3
     .select(element)

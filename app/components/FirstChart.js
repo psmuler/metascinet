@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { forceGraph } from "@/utils/d3/forceGraph"
 
 const FirstChart = ({ data }) => {
-  let svgRef = useRef(null)
+  const svgRef = useRef(null)
 
   useEffect(() => {
     forceGraph(data, {
@@ -11,12 +11,12 @@ const FirstChart = ({ data }) => {
       nodeGroup: (d) => d.group,
       nodeTitle: (d) => `${d.id}\n${d.group}`,
 
-      nodeStrength: -200,
-      linkStrokeWidth: (l) => Math.sqrt(l.value),
-      height: 1080,
-      width: 1800
+      nodeStrength: -10,
+      // linkStrokeWidth: (k) => Math.sqrt(k.value),
+      height: 300,
+      width: 400
     });
-  }, [data])
+  }, [])
 
 
   return (
