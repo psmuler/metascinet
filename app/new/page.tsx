@@ -1,9 +1,13 @@
 'use client'
 
-import { Button, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
-import React from 'react';
+import { Button, Callout, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { AlertOctagonIcon } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
+
 
 interface Form {
     name: string,
@@ -12,17 +16,29 @@ interface Form {
 }
 const FormDemo = () => {
     const { register, handleSubmit } = useForm<Form>();
+    const router = useRouter();
+    const [error, setError] = useState('');
+    const [isSending, setisSending] = useState(false)
 
     return (
         <form
-            onSubmit={handleSubmit((data) => {
-                console.log(data)
+            onSubmit={handleSubmit(async (data) => {
+                try {
+                    setisSending(true)
+                    await axios.post("/api/actors", data)
+                    router.push("/")
+                } catch (e) {
+                    setError("unexpected error happened.")
+                    setTimeout(function () {
+                        setisSending(false)
+                    }, 1000);
+                }
             })
             }>
             <Flex direction="column" align="center" gap="4" py="6">
                 <Flex justify="center" direction="column" gap="2" >
                     <TextField.Root style={{ maxWidth: 500 }}>
-                        <TextField.Input placeholder='Organization, Activity, Company name...' {...register('name')} />
+                        <TextField.Input placeholder='Your name, or  your Organization, Activity, Company name...' {...register('name')} />
                     </TextField.Root >
                     <div>
                         <TextField.Root style={{ maxWidth: 500 }}>
@@ -37,8 +53,12 @@ const FormDemo = () => {
                         {...register('description')}
                     />
                 </Flex>
+                {error && <Callout.Root color='red'>
+                    <Callout.Icon><AlertOctagonIcon size={"18"} /></Callout.Icon>
+                    <Callout.Text>{error}</Callout.Text>
+                </Callout.Root>}
                 <div>
-                    <Button style={{}}>Send</Button>
+                    <Button disabled={isSending}>{isSending ? <><Spinner />Sending...</> : <>Send</>}</Button>
                 </div>
             </Flex>
         </form>
