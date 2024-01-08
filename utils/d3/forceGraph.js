@@ -165,7 +165,6 @@ export function forceGraph(
     .text((d) => d.id);
 
   function clicked(_, d) {
-    console.log(d)
     onFocus(d.id)
   }
 
