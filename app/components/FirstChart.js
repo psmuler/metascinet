@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react"
 import { forceGraph } from "@/utils/d3/forceGraph"
-
 const FirstChart = ({ data, onFocus }) => {
-  const svgRef = useRef(null)
+  const svgRef = useRef()
 
   useEffect(() => {
     forceGraph(data, {
@@ -16,12 +15,12 @@ const FirstChart = ({ data, onFocus }) => {
       height: 300,
       width: 400
     });
-  })
+  }, [])
 
 
   return (
     <>
-      <svg ref={svgRef} />
+      <svg ref={svgRef} key={data} />
     </>
   )
 }

@@ -24,7 +24,6 @@ const FormDemo = () => {
             onSubmit={handleSubmit(async (data) => {
                 if (!isValid) return false;
                 try {
-                    console.log("first")
                     setisSending(true)
                     await axios.post("/api/actors", data)
                     router.push("/")
