@@ -1,12 +1,4 @@
 {
   "extends": "next/core-web-vitals",
-  "rules": {
-    "object-curly-newline": [
-      "error",
-      {
-        "ObjectExpression": "singleline",
-        "ObjectPattern": "singleline"
-      }
-    ]
-  }
+  "rules": {}
 }

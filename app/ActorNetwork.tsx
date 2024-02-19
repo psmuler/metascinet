@@ -2,14 +2,10 @@
 import React, { useState } from 'react'
 import ShowActor from "./ShowActor"
 import FirstChart from "./components/FirstChart"
+import { z } from 'zod'
+import { createActorSchema } from '@/lib/ActorSchema'
 
-interface Actor {
-    name: string
-    group: number
-    id: string
-    email: string
-    description: string
-}
+type Actor = z.infer<typeof createActorSchema>
 interface Props {
     nodes: Actor[]
     links: object

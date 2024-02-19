@@ -1,27 +1,29 @@
 import { Button } from "@radix-ui/themes"
 import Link from "next/link"
-import axios from "axios"
 import ActorNetwork from "./ActorNetwork";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./api/firebase";
+import { z } from "zod";
+import { createActorSchema } from "@/lib/ActorSchema";
 
-if (process.env.NODE_ENV === 'production') {
-  // Set production base URL
-  axios.defaults.baseURL = 'https://metascinet.vercel.app/';
-} else {
-  // Set development base URL
-  axios.defaults.baseURL = 'http://localhost:3000';
+const fetchActors = async () => {
+  const querySnapshot = await getDocs(collection(db, "actors"));
+  const nodes: Actor[] = []
+  querySnapshot.forEach((doc) => {
+    nodes.push({
+      name: doc.data().name,
+      email: doc.data().email,
+      group: 1,
+      description: doc.data().description,
+      embedding: doc.data().embedding
+    })
+  });
+
+  return nodes
 }
-interface Actor {
-  name: string
-  group: number
-  id: string
-  email: string
-  description: string
-  embedding: {
-    data: {
-      embedding: number[];
-    }[];
-  }
-}
+
+type Actor = z.infer<typeof createActorSchema>
+
 const THRESHOLD = 0.00018
 const computeCosineSimilarity = (arr1: number[], arr2: number[]) => {
   if (arr1.length != arr2.length) return null
@@ -34,23 +36,19 @@ const computeCosineSimilarity = (arr1: number[], arr2: number[]) => {
   return c / (n1 ^ (0.5) * n2 ^ (0.5))
 }
 export default async function Home() {
-  const res = await axios.get("/api/actors")
-  const nodes: Actor[] = res.data.nodes.map((node: Actor) => (
-    {
-      ...node,
-      group: 1
-    }
-  ))
+  const nodes: Actor[] = await fetchActors()
   const links: object[] = []
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const vec1 = nodes[i].embedding.data[0].embedding
-      const vec2 = nodes[j].embedding.data[0].embedding
+  if (nodes) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const vec1 = nodes[i].embedding.data[0].embedding
+        const vec2 = nodes[j].embedding.data[0].embedding
 
-      const cossim = computeCosineSimilarity(vec1, vec2)
+        const cossim = computeCosineSimilarity(vec1, vec2)
 
-      if (cossim && cossim > THRESHOLD) {
-        links.push({ source: nodes[i].name, target: nodes[j].name, value: 1 })
+        if (cossim && cossim > THRESHOLD) {
+          links.push({ source: nodes[i].name, target: nodes[j].name, value: 1 })
+        }
       }
     }
   }
