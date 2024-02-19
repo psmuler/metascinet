@@ -12,7 +12,7 @@ const FirstChart = ({ data, onFocus }) => {
       nodeTitle: (d) => `${d.name}`,
       onFocus: onFocus,
       nodeStrength: -10,
-      // linkStrokeWidth: (k) => Math.sqrt(k.value),
+      linkStrokeWidth: (k) => Math.sqrt(k.value),
       height: 300,
       width: 400
     });

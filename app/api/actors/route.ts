@@ -1,31 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from 'zod';
 import { db } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
-
-const createActorSchema = z.object({
-    name: z.string().min(1).max(50),
-    email: z.string().email(),
-    description: z.string().min(1),
-})
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { createActorSchema } from "@/lib/ActorSchema";
+import OpenAI from 'openai';
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
 
     const validation = createActorSchema.safeParse(body)
-    if (!validation.success) return NextResponse.json("invalid data format", { status: 400 })
+    if (!validation.success) return NextResponse.json(validation.error, { status: 400 })
+
+    const openai = new OpenAI({
+        apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
+    });
+
+    const embedding = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: body.description,
+        encoding_format: "float",
+    })
 
     const data = {
         name: body.name,
         email: body.email,
-        description: body.description
+        group: 1,
+        description: body.description,
+        embedding: embedding
     }
+
     await addDoc(collection(db, "actors"), data)
     return (NextResponse.json(body, { status: 201 }))
 }
 
 export async function GET(request: NextRequest) {
-    // const body = await request.json()
-    const data = { name: "Loyd Forger", email: "aho@example.com", description: "you are not baka" }
-    return NextResponse.json(data, { status: 200 })
+    const actors = await getDocs(collection(db, "actors"))
+    const nodes = actors.docs.map(doc => (doc.data()))
+
+    return NextResponse.json({ nodes: nodes, links: [] }, { status: 200 })
 }
