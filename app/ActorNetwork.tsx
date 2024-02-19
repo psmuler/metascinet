@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import ShowActor from "./ShowActor"
 import FirstChart from "./components/FirstChart"
 import { z } from 'zod'
-import { createActorSchema } from '@/lib/ActorSchema'
+import { fetchActorSchema } from '@/lib/ActorSchema'
 
-type Actor = z.infer<typeof createActorSchema>
+type Actor = z.infer<typeof fetchActorSchema>
 interface Props {
     nodes: Actor[]
     links: object

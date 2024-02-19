@@ -16,7 +16,7 @@ const FirstChart = ({ data, onFocus }) => {
       height: 300,
       width: 400
     });
-  }, [])
+  })
 
 
   return (

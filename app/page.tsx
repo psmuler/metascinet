@@ -4,7 +4,7 @@ import ActorNetwork from "./ActorNetwork";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./api/firebase";
 import { z } from "zod";
-import { createActorSchema } from "@/lib/ActorSchema";
+import { fetchActorSchema } from "@/lib/ActorSchema";
 
 const fetchActors = async () => {
   const querySnapshot = await getDocs(collection(db, "actors"));
@@ -22,7 +22,7 @@ const fetchActors = async () => {
   return nodes
 }
 
-type Actor = z.infer<typeof createActorSchema>
+type Actor = z.infer<typeof fetchActorSchema>
 
 const THRESHOLD = 0.00018
 const computeCosineSimilarity = (arr1: number[], arr2: number[]) => {
