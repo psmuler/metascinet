@@ -35,6 +35,7 @@ const computeCosineSimilarity = (arr1: number[], arr2: number[]) => {
   }
   return c / (n1 ^ (0.5) * n2 ^ (0.5))
 }
+export const dynamic = 'force-dynamic'
 export default async function Home() {
   const nodes: Actor[] = await fetchActors()
   const links: object[] = []
