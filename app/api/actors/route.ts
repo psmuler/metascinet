@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!validation.success) return NextResponse.json(validation.error, { status: 400 })
 
     const openai = new OpenAI({
-        apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
+        apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
     });
 
     const embedding = await openai.embeddings.create({
