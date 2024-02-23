@@ -5,6 +5,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "./api/firebase";
 import { z } from "zod";
 import { fetchActorSchema } from "@/lib/ActorSchema";
+import { MousePointerClick, Move } from "lucide-react";
 
 const fetchActors = async () => {
   const querySnapshot = await getDocs(collection(db, "actors"));
@@ -61,8 +62,29 @@ export default async function Home() {
   return (
     <div>
       <div className="justify-center">
-        <p className="p-5 justify-center">Metascience Actors Map</p>
-        <Button><Link href="/new">Add Yours</Link></Button>
+        <div className="flex">
+          <p className="p-5 justify-center">Metascience Actor&apos;s Map</p>
+          <div className="p-5 justify-center">
+            <Button variant="surface"><Link href="/about">Metascience Actors Mapとは?</Link></Button>
+
+          </div>
+          <div className="p-5 justify-center">
+            <Button><Link href="/new">他のActorとつながる</Link></Button>
+          </div>
+
+
+        </div>
+        <div>
+          <div className="flex gap-x-5">
+            <MousePointerClick />
+            <p>Click or tap nodes to view detail</p>
+          </div>
+          <div className="flex gap-x-5">
+            <Move />
+            <p>Drag or Hold to move nodes</p>
+          </div>
+        </div>
+
         <ActorNetwork nodes={data.nodes} links={data.links} />
       </div>
 
